@@ -21,20 +21,35 @@ app.get('/', (request, response) => {
 
 app.post('/signup', (request, response) => {
   request.checkBody('name', 'You must enter a username!').notEmpty().isLength(0, 100)
-  request.checkBody('email', 'You must enter your email!').notEmpty().isLength(0, 100)
-  request.checkBody('yob', 'Please enter your year of birth!').isLength(1900, 2017)
-  request.checkBody('job', 'Please select your option')
+  request.checkBody('email', 'You must enter your email!').notEmpty().isLength(0, 100).isEmail()
+  request.checkBody('year', 'Please enter your year of birth!').isInt({ min: 1900, max: 2017 })
+  request.checkBody('job', 'Please select your option').notEmpty()
   request.checkBody('password', 'Please enter your password!').notEmpty().isLength(8, 1000)
 
-  let name = request.body.name
-  let email = request.body.email
-  let yob = request.body.year
-  let job = request.body.jobs
+  var errors = request.validationErrors()
+  if (errors) {
+    var html = errors
+    response.send(html)
+  } else {
+    let name = request.body.name
+    console.log(name)
+    let email = request.body.email
+    console.log(email)
+    let year = request.body.year
+    console.log(year)
+    var job = request.body.job
+    console.log(job)
 
-  let password = request.body.password
+    let password = request.body.password
+    console.log(password)
 
-  let html = `name = ${name} email = ${email} Year of Birth = ${yob} jobs = ${job}  password = ${password}`
-  response.send(html)
+    let html = `<p> Your name is: ${name}</p>
+                <p> Your email is: ${email}</p>
+                <p> Your year of birth is between 1900 and 2017: ${year}</p>
+                <p> Your job selection is: ${job}</p>
+                <p> Your password is: ${password}</p>`
+    response.send(html)
+  }
 })
 
 app.listen(3000, () => {

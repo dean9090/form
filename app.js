@@ -1,5 +1,6 @@
 const express = require('express')
 const mustacheExpress = require('mustache-express')
+const expressValidator = require('express-validator')
 
 const bodyParser = require('body-parser')
 
@@ -7,6 +8,7 @@ const app = express()
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
+app.use(expressValidator())
 
 app.set('views', './views')
 app.engine('mustache', mustacheExpress())
@@ -18,6 +20,12 @@ app.get('/', (request, response) => {
 })
 
 app.post('/signup', (request, response) => {
+  request.checkBody('name', 'You must enter a username!').notEmpty().isLength(0, 100)
+  request.checkBody('email', 'You must enter your email!').notEmpty().isLength(0, 100)
+  request.checkBody('yob', 'Please enter your year of birth!').isLength(1900, 2017)
+  request.checkBody('job', 'Please select your option')
+  request.checkBody('password', 'Please enter your password!').notEmpty().isLength(8, 1000)
+
   let name = request.body.name
   let email = request.body.email
   let yob = request.body.year
